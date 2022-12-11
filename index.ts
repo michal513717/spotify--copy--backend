@@ -1,5 +1,6 @@
 import express, { Application, Request, Response } from "express";
-import { database } from "./database";
+import DatabaseManager from "./database";
+import AuthManager from "./managers/authManager";
 
 const app: Application = express();
 const port = 3000;
@@ -8,10 +9,14 @@ const port = 3000;
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.get("/", async (req: Request, res: Response): Promise<Response> => {
+const authManager = new AuthManager();
+const databaseManager = new DatabaseManager();
 
-    console.log(database.getData());
-    
+app.get("/", async (req: Request, res: Response): Promise<Response> => {    
+
+    // console.log(databaseManager.insert('usersss', { name:'qwe', password:'abc' }));
+    // console.log(await databaseManager.loadFromCollection('users'));
+    console.log(await databaseManager.getData('users'));
 
     return res.status(200).send({
         message: "Hello World!",

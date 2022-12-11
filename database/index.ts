@@ -1,63 +1,93 @@
-import { IUsers } from "../models";
-import { getErrorMessage } from "../utils";
+import { IStatus } from "../models";
 
 var Datastore = require('nedb')
 
-class Database {
+export default class DatabaseManager {
     usersDB: any;
     usersData: any;
+    allCollections: any;
 
     constructor(){
 
-        this.loadDataBase();
+        this.allCollections = { users: this.usersDB };
+        this.initialDatabase();
     }
 
-    public getData(){
+    public getData(dataBaseName: string): object{
 
-        //currently return users
-        return this.usersData;
+        const isDatabaseExist = this.checkDatabaseName(dataBaseName);
+
+        if( isDatabaseExist === false ){
+
+            return {err: 'Invalid Database Name'};
+        }
+        
+        return this.loadFromCollection(dataBaseName);
     }
 
-    private loadDataBase(): void{
+    private initialDatabase(): void{
 
-        this.usersDB = new Datastore({filename: './data/users.db', autoload: true})
-        this.insert();
-        this.loadAllData();
+        const usersDB = new Datastore({filename: './database/data/users.db', autoload: true});
+        
+        this.allCollections = { 
+            users: usersDB,
+        };
+
+        this.loadFromCollection('users');
     }
 
-    private insert(): void{
+    private insert<T = {}>(dataBaseName:string, data:T): IStatus{
 
-        var doc = {
-            name: "aaa",
-            pass: "aaa"
-        };
-        var doc2 = {
-            name: "bbb",
-            pass: "bbb"
-        };
-        var doc3 = {
-            name: "ccc",
-            pass: "ccc"
-        };
-        var doc4 = {
-            name: "ddd",
-            pass: "ddd"
-        };
+        const isDatabaseExist = this.checkDatabaseName(dataBaseName);
 
-        this.usersDB.insert(doc);
-        this.usersDB.insert(doc2)
-        this.usersDB.insert(doc3)
-        this.usersDB.insert(doc4)
+        if( isDatabaseExist === false){
+
+            return {err: 'Invalid Database Name'};
+        }
+
+        const dataBase = this.allCollections[dataBaseName];
+
+        dataBase.insert(data, (err:any, doc:any) => {
+
+            if(err){
+                return {err: 'Error during saving'};
+            }
+        })
+
+        return { succes: 'Success insert' }
     }
 
-    private loadAllData(): void{
+    private loadFromCollection(dataBaseName:string){
 
-        this.usersDB.find({},  (err:any, docs:any) => {
-            console.log(docs);
-            this.usersData = JSON.stringify({docs}, null, 5);
+        return new Promise ((resolve, reject) => {
+
+            const isDatabaseExist = this.checkDatabaseName(dataBaseName);
+
+            if( isDatabaseExist === false ){
+                
+                reject({ err:'Invalid Database Name' });
+            }
+
+            const dataBase = this.allCollections[dataBaseName];
+
+            dataBase.find({}, <T>(err:any, docs:T) => {
+                if(err){
+                    reject(err);
+                }
+
+                resolve(docs);
+            });
         })
     }
-    
-}
 
-export const database = new Database();
+    private checkDatabaseName(databaseName: string): boolean {
+
+        const keys:string[] = Object.keys(this.allCollections);
+        
+        if(keys.includes(databaseName) !== false) {
+            return true;
+        }
+
+        return false;
+    }
+}
