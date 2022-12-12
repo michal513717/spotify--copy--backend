@@ -9,7 +9,7 @@ export default class AuthManager {
     constructor(){
 
         this.initialDatabaseUsers()
-    }
+    };
 
     private async initialDatabaseUsers (){
 
@@ -24,13 +24,9 @@ export default class AuthManager {
 
         this.isDatabaseExist = true;
         this.users = users as IUsers[];
+    };
 
-        console.log(this.users);
-        console.log(this.login('aaa','aaa'))
-        console.log(this.register('aaaa','aaaaaaaaaaaa'))
-    }
-
-    private login( userName: string, password:string ): boolean{
+    public login( userName: string, password:string ): boolean{
 
         const isLoginSuccesfull = this.isExistUserWithUserNameAndPassword(userName, password);
 
@@ -40,9 +36,9 @@ export default class AuthManager {
         }
 
         return false;
-    }
+    };
 
-    private register( userName: string, password:string ): boolean {
+    public register( userName: string, password:string ): boolean {
 
         const isExistUserWithUserName = this.isExistUserWithUserName(userName);
 
@@ -60,7 +56,7 @@ export default class AuthManager {
         this.addUserToDatabase(userName, password);
 
         return true;
-    }
+    };
 
     private isExistUserWithUserName(checkingName:string): boolean { // to rename
  
@@ -70,7 +66,7 @@ export default class AuthManager {
         }
 
         return false;
-    }
+    };
 
     private isExistUserWithUserNameAndPassword(userName:string, password:string): boolean { // to rename
 
@@ -80,7 +76,7 @@ export default class AuthManager {
         }
 
         return false;
-    }
+    };
 
     private validPassword(password:string): boolean {
 
@@ -90,7 +86,7 @@ export default class AuthManager {
         }
 
         return true;
-    }
+    };
 
     private addUserToDatabase(userName: string, password: string): boolean{
         try{
@@ -105,5 +101,5 @@ export default class AuthManager {
             console.log(err);
             return false;
         }
-    }
+    };
 };

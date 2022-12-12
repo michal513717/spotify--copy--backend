@@ -3,15 +3,15 @@ import { IError, IStatus } from "../models";
 var Datastore = require('nedb')
 
 export default class DatabaseManager {
-    usersDB: any;
-    usersData: any;
-    allCollections: any;
+    private usersDB: any;
+    private usersData: any;
+    private allCollections: any;
 
     constructor(){
 
         this.allCollections = { users: this.usersDB };
         this.initialDatabase();
-    }
+    };
 
     public async getData<T>(dataBaseName: string): Promise<IError | Awaited<T>>{
 
@@ -23,7 +23,7 @@ export default class DatabaseManager {
         }
         
         return await this.loadFromCollection(dataBaseName);
-    }
+    };
 
     private initialDatabase(): void{
 
@@ -34,7 +34,7 @@ export default class DatabaseManager {
         };
 
         this.loadFromCollection('users');
-    }
+    };
 
     public insert<T = {}>(dataBaseName:string, data:T): IStatus{
 
@@ -55,7 +55,7 @@ export default class DatabaseManager {
         })
 
         return { succes: 'Success insert' }
-    }
+    };
 
     private loadFromCollection<R>(dataBaseName:string): Promise<R>{
 
@@ -78,7 +78,7 @@ export default class DatabaseManager {
                 resolve(docs);
             });
         })
-    }
+    };
 
     private checkDatabaseName(databaseName: string): boolean {
 
@@ -89,5 +89,5 @@ export default class DatabaseManager {
         }
 
         return false;
-    }
+    };
 }
