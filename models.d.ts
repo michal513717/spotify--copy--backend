@@ -3,7 +3,7 @@ type ErrorWithMessage = {
 };
 
 export interface IUsers {
-    name: string;
+    userName: string;
     password: string;
     _id: string;
 };
@@ -11,4 +11,8 @@ export interface IUsers {
 export interface IStatus {
     err?: string,
     succes?: string
+}
+
+export interface IError {
+    err: string
 }

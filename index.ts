@@ -9,14 +9,14 @@ const port = 3000;
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-const authManager = new AuthManager();
-const databaseManager = new DatabaseManager();
+export const databaseManager = new DatabaseManager();
+export const authManager = new AuthManager();
 
 app.get("/", async (req: Request, res: Response): Promise<Response> => {    
 
     // console.log(databaseManager.insert('usersss', { name:'qwe', password:'abc' }));
     // console.log(await databaseManager.loadFromCollection('users'));
-    console.log(await databaseManager.getData('users'));
+    // console.log(await databaseManager.getData('users'));
 
     return res.status(200).send({
         message: "Hello World!",

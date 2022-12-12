@@ -1,4 +1,4 @@
-import { IStatus } from "../models";
+import { IError, IStatus } from "../models";
 
 var Datastore = require('nedb')
 
@@ -13,7 +13,7 @@ export default class DatabaseManager {
         this.initialDatabase();
     }
 
-    public getData(dataBaseName: string): object{
+    public async getData<T>(dataBaseName: string): Promise<IError | Awaited<T>>{
 
         const isDatabaseExist = this.checkDatabaseName(dataBaseName);
 
@@ -22,7 +22,7 @@ export default class DatabaseManager {
             return {err: 'Invalid Database Name'};
         }
         
-        return this.loadFromCollection(dataBaseName);
+        return await this.loadFromCollection(dataBaseName);
     }
 
     private initialDatabase(): void{
@@ -36,7 +36,7 @@ export default class DatabaseManager {
         this.loadFromCollection('users');
     }
 
-    private insert<T = {}>(dataBaseName:string, data:T): IStatus{
+    public insert<T = {}>(dataBaseName:string, data:T): IStatus{
 
         const isDatabaseExist = this.checkDatabaseName(dataBaseName);
 
@@ -57,7 +57,7 @@ export default class DatabaseManager {
         return { succes: 'Success insert' }
     }
 
-    private loadFromCollection(dataBaseName:string){
+    private loadFromCollection<R>(dataBaseName:string): Promise<R>{
 
         return new Promise ((resolve, reject) => {
 
@@ -70,7 +70,7 @@ export default class DatabaseManager {
 
             const dataBase = this.allCollections[dataBaseName];
 
-            dataBase.find({}, <T>(err:any, docs:T) => {
+            dataBase.find({}, (err:any, docs:R) => {
                 if(err){
                     reject(err);
                 }
