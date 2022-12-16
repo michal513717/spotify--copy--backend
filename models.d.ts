@@ -16,3 +16,7 @@ export interface IStatus {
 export interface IError {
     err: string
 }
+
+export interface IAlbumContent {
+    [key: string]: string[]
+}

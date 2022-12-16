@@ -47,7 +47,7 @@ app.post("/login", cors(), async (req: Request<{}, {}, IUsers, {}>, res:Response
     return res.status(200).send({
         isLogginSuccesfull: true,
         message: "Login Successful",
-    })
+    });
 });
 
 
@@ -67,8 +67,47 @@ app.post("/register", async (req: Request< {}, {} , IUsers, {}>, res: Response):
     return res.status(200).send({
         isRegisteredSuccesfull: true,
         message: "Register Successful"
-    })
-})
+    });
+});
+
+app.get("/:fileName",async (req: Request, res: Response): Promise<Response> => {
+
+    //to do
+    
+    const fileName = req.params.fileName;
+    
+    return res.status(200).send({
+
+    });
+
+
+    //error
+    // return res.status(401).send({
+        // isRegisteredSuccesfull: false,
+        // message: "The username is alredy used",
+    // });
+});
+
+app.get("/avalibleAlbums", async (req: Request, res: Response): Promise<Response> => {
+
+    const avalibleAlbums = fileManager.getAlbums();
+
+    return res.status(200).send({
+        avalibleAlbums: avalibleAlbums,
+        message: "Loaded avalible albums Succesfully"
+    });
+});
+
+app.get("/avalibleMusic/:albumName", async (req: Request, res: Response): Promise<Response> => {
+
+    // to do
+    const albumName = req.params.albumName;
+
+    return res.status(200).send({
+        
+    });
+});
+
 
 try {
     app.listen(port, (): void => {

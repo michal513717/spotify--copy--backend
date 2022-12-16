@@ -79,6 +79,8 @@ export default class AuthManager {
 
             databaseManager.insert(this.databaseName, userData);
 
+            this.initialDatabaseUsers();
+            
             return true;
         } catch(err){
 

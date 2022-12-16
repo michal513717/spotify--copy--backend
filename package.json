@@ -1,8 +1,8 @@
 {
   "name": "spotify--copy--backend",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "version": "1.0.1",
+  "description": "Backend of the electron spotify",
+  "main": "index.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "ts-node-dev ./index.ts"
