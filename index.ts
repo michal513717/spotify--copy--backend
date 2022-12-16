@@ -6,10 +6,13 @@ import { IUsers } from "./models";
 
 const app: Application = express();
 const port = 3000;
+var cors = require('cors')
 
 // Body parsing Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+app.use(cors());
 
 export const databaseManager = new DatabaseManager();
 export const authManager = new AuthManager();
@@ -27,38 +30,42 @@ app.get("/", async (req: Request, res: Response): Promise<Response> => {
 });
 
 // app.get<IUsers, boolean, {}, IUsers>("/login", async  (req, res): Promise<Response> => {
-app.get("/login", async (req: Request<{}, {}, {}, IUsers>, res:Response): Promise<Response> => {
+app.post("/login", cors(), async (req: Request<{}, {}, IUsers, {}>, res:Response): Promise<Response> => {
     // Params, ResBody, ReqBody, ReqQuery and Locals
 
-    const { userName, password } = req.query;
+    const { userName, password } = req.body;
 
     const isLoginSuccesfull = await authManager.login(userName, password);
 
     if(isLoginSuccesfull === false){
         return res.status(401).send({
+            isLogginSuccesfull: false,
             message: "Bad login or incorrect password",
         });
     };
 
     return res.status(200).send({
+        isLogginSuccesfull: true,
         message: "Login Successful",
     })
 });
 
 
-app.get("/register", async (req: Request<{}, {}, {}, IUsers>, res: Response): Promise<Response> => {
+app.post("/register", async (req: Request< {}, {} , IUsers, {}>, res: Response): Promise<Response> => {
 
-    const { userName, password } = req.query;
+    const { userName, password } = req.body;
 
     const isRegisteredSuccesfull = await authManager.register(userName, password);
 
     if(isRegisteredSuccesfull === false){
         return res.status(401).send({
+            isRegisteredSuccesfull: false,
             message: "The username is alredy used",
         });
     }
 
     return res.status(200).send({
+        isRegisteredSuccesfull: true,
         message: "Register Successful"
     })
 })

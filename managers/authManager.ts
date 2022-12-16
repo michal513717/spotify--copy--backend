@@ -43,14 +43,8 @@ export default class AuthManager {
         const isExistUserWithUserName = this.isExistUserWithUserName(userName);
 
         if( isExistUserWithUserName === true ) {
+
             return false;
-        }
-
-        const isPasswordValid = this.validPassword(password);
-
-        if( isPasswordValid === false ) {
-
-            return false
         }
 
         this.addUserToDatabase(userName, password);
@@ -76,16 +70,6 @@ export default class AuthManager {
         }
 
         return false;
-    };
-
-    private validPassword(password:string): boolean {
-
-        if(password.length <= 8){
-
-            return false
-        }
-
-        return true;
     };
 
     private addUserToDatabase(userName: string, password: string): boolean{
