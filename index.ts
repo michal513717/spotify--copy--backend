@@ -70,27 +70,11 @@ app.post("/register", async (req: Request< {}, {} , IUsers, {}>, res: Response):
     });
 });
 
-app.get("/:fileName",async (req: Request, res: Response): Promise<Response> => {
+app.get("/avaliblealbums/", async (req: Request, res: Response): Promise<Response> => {
 
-    //to do
-    
-    const fileName = req.params.fileName;
-    
-    return res.status(200).send({
+    const avalibleAlbums = await fileManager.getAlbums();
 
-    });
-
-
-    //error
-    // return res.status(401).send({
-        // isRegisteredSuccesfull: false,
-        // message: "The username is alredy used",
-    // });
-});
-
-app.get("/avalibleAlbums", async (req: Request, res: Response): Promise<Response> => {
-
-    const avalibleAlbums = fileManager.getAlbums();
+    console.log(avalibleAlbums);
 
     return res.status(200).send({
         avalibleAlbums: avalibleAlbums,
