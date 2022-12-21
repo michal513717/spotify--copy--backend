@@ -70,7 +70,7 @@ app.post("/register", async (req: Request< {}, {} , IUsers, {}>, res: Response):
     });
 });
 
-app.get("/avaliblealbums/", async (req: Request, res: Response): Promise<Response> => {
+app.get("/avaliblealbums", async (req: Request, res: Response): Promise<Response> => {
 
     const avalibleAlbums = await fileManager.getAlbums();
 
@@ -82,13 +82,23 @@ app.get("/avaliblealbums/", async (req: Request, res: Response): Promise<Respons
     });
 });
 
-app.get("/avalibleMusic/:albumName", async (req: Request, res: Response): Promise<Response> => {
-
-    // to do
+app.get("/avaliblealbums/:albumName", async (req: Request, res: Response): Promise<Response> => {
+    
     const albumName = req.params.albumName;
 
-    return res.status(200).send({
-        
+    const avalibleMusicList = await fileManager.getMusic(albumName);
+
+    if(avalibleMusicList.length > 0){
+
+        return res.status(200).send({
+            avalibleMusicList: avalibleMusicList,
+            message: "Loaded avalible music Succesfully"
+        });
+    }
+
+    return res.status(200).send({ // it should be 200? // to remake //temponary
+        avalibleMusicList: avalibleMusicList,
+        message: "Empty album or Error"
     });
 });
 
