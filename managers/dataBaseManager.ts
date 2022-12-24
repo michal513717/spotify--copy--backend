@@ -4,7 +4,6 @@ var Datastore = require('nedb')
 
 export default class DatabaseManager {
     private usersDB: any;
-    private usersData: any;
     private allCollections: any;
 
     constructor(){
@@ -27,7 +26,7 @@ export default class DatabaseManager {
 
     private initialDatabase(): void{
 
-        const usersDB = new Datastore({filename: './database/data/users.db', autoload: true});
+        const usersDB = new Datastore({filename: './database/users.db', autoload: true});
         
         this.allCollections = { 
             users: usersDB,

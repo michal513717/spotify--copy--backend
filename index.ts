@@ -1,5 +1,5 @@
 import express, { Application, Request, Response } from "express";
-import DatabaseManager from "./database";
+import DatabaseManager from "./managers/dataBaseManager";
 import AuthManager from "./managers/authManager";
 import FileManager from "./managers/fileManager";
 import { IUsers } from "./models";
@@ -18,18 +18,15 @@ export const databaseManager = new DatabaseManager();
 export const authManager = new AuthManager();
 export const fileManager = new FileManager();
 
-app.get("/", async (req: Request, res: Response): Promise<Response> => {    
+app.use("/music", express.static('assets/music'));
 
-    // console.log(databaseManager.insert('usersss', { name:'qwe', password:'abc' }));
-    // console.log(await databaseManager.loadFromCollection('users'));
-    // console.log(await databaseManager.getData('users'));
+app.get("/", async (req: Request, res: Response): Promise<Response> => {    
 
     return res.status(200).send({
         message: "Hello World!",
     });
 });
 
-// app.get<IUsers, boolean, {}, IUsers>("/login", async  (req, res): Promise<Response> => {
 app.post("/login", cors(), async (req: Request<{}, {}, IUsers, {}>, res:Response): Promise<Response> => {
     // Params, ResBody, ReqBody, ReqQuery and Locals
 
@@ -39,12 +36,14 @@ app.post("/login", cors(), async (req: Request<{}, {}, IUsers, {}>, res:Response
 
     if(isLoginSuccesfull === false){
         return res.status(401).send({
+            isActionSuccess: true,
             isLogginSuccesfull: false,
             message: "Bad login or incorrect password",
         });
     };
 
     return res.status(200).send({
+        isActionSuccess: true,
         isLogginSuccesfull: true,
         message: "Login Successful",
     });
@@ -59,12 +58,14 @@ app.post("/register", async (req: Request< {}, {} , IUsers, {}>, res: Response):
 
     if(isRegisteredSuccesfull === false){
         return res.status(401).send({
+            isActionSuccess: true,
             isRegisteredSuccesfull: false,
             message: "The username is alredy used",
         });
     }
 
     return res.status(200).send({
+        isActionSuccess: true,
         isRegisteredSuccesfull: true,
         message: "Register Successful"
     });
@@ -77,6 +78,7 @@ app.get("/avaliblealbums", async (req: Request, res: Response): Promise<Response
     console.log(avalibleAlbums);
 
     return res.status(200).send({
+        isActionSuccess: true,
         avalibleAlbums: avalibleAlbums,
         message: "Loaded avalible albums Succesfully"
     });
@@ -91,12 +93,14 @@ app.get("/avaliblealbums/:albumName", async (req: Request, res: Response): Promi
     if(avalibleMusicList.length > 0){
 
         return res.status(200).send({
+            isActionSuccess: true,
             avalibleMusicList: avalibleMusicList,
             message: "Loaded avalible music Succesfully"
         });
     }
 
     return res.status(200).send({ // it should be 200? // to remake //temponary
+        isActionSuccess: true,
         avalibleMusicList: avalibleMusicList,
         message: "Empty album or Error"
     });
