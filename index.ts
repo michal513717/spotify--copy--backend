@@ -3,114 +3,69 @@ import DatabaseManager from "./managers/dataBaseManager";
 import AuthManager from "./managers/authManager";
 import FileManager from "./managers/fileManager";
 import { IUsers } from "./models";
+import { CommonRoutesConfig } from "./common/common.routes.config";
 
-const app: Application = express();
+import * as http from 'http';
+
+import * as winston from 'winston';
+import * as expressWinston from 'express-winston';
+import cors from 'cors';
+import {UsersRoutes} from './users/users.routes.config';
+import debug from 'debug';
+
+const app: express.Application = express();
+const server: http.Server = http.createServer(app);
 const port = 3000;
-var cors = require('cors')
+const routes: Array<CommonRoutesConfig> = [];
+const debugLog: debug.IDebugger = debug('app');
 
-// Body parsing Middleware
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-
-app.use(cors());
 
 export const databaseManager = new DatabaseManager();
 export const authManager = new AuthManager();
 export const fileManager = new FileManager();
 
-app.use("/music", express.static('assets/music'));
 
-app.get("/", async (req: Request, res: Response): Promise<Response> => {    
+// here we are adding middleware to parse all incoming requests as JSON 
+app.use(express.json());
 
-    return res.status(200).send({
-        message: "Hello World!",
-    });
-});
+// here we are adding middleware to allow cross-origin requests
+app.use(cors());
 
-app.post("/login", cors(), async (req: Request<{}, {}, IUsers, {}>, res:Response): Promise<Response> => {
-    // Params, ResBody, ReqBody, ReqQuery and Locals
+// here we are preparing the expressWinston logging middleware configuration,
+// which will automatically log all HTTP requests handled by Express.js
+const loggerOptions: expressWinston.LoggerOptions = {
+    transports: [new winston.transports.Console()],
+    format: winston.format.combine(
+        winston.format.json(),
+        winston.format.prettyPrint(),
+        winston.format.colorize({ all: true })
+    ),
+};
 
-    const { userName, password } = req.body;
-
-    const isLoginSuccesfull = await authManager.login(userName, password);
-
-    if(isLoginSuccesfull === false){
-        return res.status(401).send({
-            isActionSuccess: true,
-            isLogginSuccesfull: false,
-            message: "Bad login or incorrect password",
-        });
-    };
-
-    return res.status(200).send({
-        isActionSuccess: true,
-        isLogginSuccesfull: true,
-        message: "Login Successful",
-    });
-});
-
-
-app.post("/register", async (req: Request< {}, {} , IUsers, {}>, res: Response): Promise<Response> => {
-
-    const { userName, password } = req.body;
-
-    const isRegisteredSuccesfull = await authManager.register(userName, password);
-
-    if(isRegisteredSuccesfull === false){
-        return res.status(401).send({
-            isActionSuccess: true,
-            isRegisteredSuccesfull: false,
-            message: "The username is alredy used",
-        });
-    }
-
-    return res.status(200).send({
-        isActionSuccess: true,
-        isRegisteredSuccesfull: true,
-        message: "Register Successful"
-    });
-});
-
-app.get("/avaliblealbums", async (req: Request, res: Response): Promise<Response> => {
-
-    const avalibleAlbums = await fileManager.getAlbums();
-
-    console.log(avalibleAlbums);
-
-    return res.status(200).send({
-        isActionSuccess: true,
-        avalibleAlbums: avalibleAlbums,
-        message: "Loaded avalible albums Succesfully"
-    });
-});
-
-app.get("/avaliblealbums/:albumName", async (req: Request, res: Response): Promise<Response> => {
-    
-    const albumName = req.params.albumName;
-
-    const avalibleMusicList = await fileManager.getMusic(albumName);
-
-    if(avalibleMusicList.length > 0){
-
-        return res.status(200).send({
-            isActionSuccess: true,
-            avalibleMusicList: avalibleMusicList,
-            message: "Loaded avalible music Succesfully"
-        });
-    }
-
-    return res.status(200).send({ // it should be 200? // to remake //temponary
-        isActionSuccess: true,
-        avalibleMusicList: avalibleMusicList,
-        message: "Empty album or Error"
-    });
-});
-
-
-try {
-    app.listen(port, (): void => {
-        console.log(`Connected successfully on port ${port}`);
-    });
-} catch (error: any) {
-    console.error(`Error occured: ${error.message}`);
+if (!process.env.DEBUG) {
+    loggerOptions.meta = false; // when not debugging, log requests as one-liners
 }
+
+// initialize the logger with the above configuration
+app.use(expressWinston.logger(loggerOptions));
+
+// here we are adding the UserRoutes to our array,
+// after sending the Express.js application object to have the routes added to our app!
+routes.push(new UsersRoutes(app));
+
+// this is a simple route to make sure everything is working properly
+const runningMessage = `Server running at http://localhost:${port}`;
+app.get('/', (req: express.Request, res: express.Response) => {
+    res.status(200).send(runningMessage)
+});
+
+server.listen(port, () => {
+    console.log(routes)
+
+    routes.forEach((route: CommonRoutesConfig) => {
+        debugLog(`Routes configured for ${route.getName()}`);
+    });
+    // our only exception to avoiding console.log(), because we
+    // always want to know when the server is done starting up
+    console.log(runningMessage);
+});

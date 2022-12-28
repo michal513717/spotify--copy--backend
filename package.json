@@ -18,6 +18,8 @@
   },
   "homepage": "https://github.com/michal513717/spotify--copy--backend#readme",
   "devDependencies": {
+    "@types/cors": "^2.8.13",
+    "@types/debug": "^4.1.7",
     "@types/express": "^4.17.14",
     "@types/node": "^18.11.13",
     "ts-node-dev": "^2.0.0",
