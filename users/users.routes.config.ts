@@ -10,12 +10,12 @@ export class UsersRoutes extends CommonRoutesConfig {
 
     configureRoutes(){
 
-        this.app.route('login')
+        this.app.route('/login')
             .post(async(req: express.Request<{}, {}, IUsers, {}>, res: express.Response) => {
                 
                 const loginStatus = await this.loginPost(req.body);
 
-                if(loginStatus === true){
+                if(loginStatus === false){
                     return res.status(401).send({
                         isActionSuccess: true,
                         isLogginSuccesfull: false,
@@ -31,13 +31,32 @@ export class UsersRoutes extends CommonRoutesConfig {
             })
 
 
+        this.app.route('/register')
+            .post(async(req: express.Request<{}, {}, IUsers, {}>, res: express.Response) => {
+                
+                const registerStatus = await this.registerPost(req.body);
+                console.log(registerStatus)
+                if(registerStatus === false){
+                    return res.status(401).send({
+                        isActionSuccess: true,
+                        isRegisteredSuccesfull: false,
+                        message: "The username is alredy used",
+                    });
+                }
+
+                return res.status(200).send({
+                    isActionSuccess: true,
+                    isRegisteredSuccesfull: true,
+                    message: "Register Successful"
+                });
+            })
+
+
             
         this.app.route("/avaliblealbums")
             .get(async (req: express.Request, res: express.Response) => {
 
                 const avalibleAlbums = await fileManager.getAlbums();
-
-                console.log(avalibleAlbums);
 
                 return res.status(200).send({
                     isActionSuccess: true,
@@ -45,6 +64,29 @@ export class UsersRoutes extends CommonRoutesConfig {
                     message: "Loaded avalible albums Succesfully"
                 });
         });
+
+        this.app.route("/avaliblealbums/:albumName")
+            .get(async (req: express.Request, res: express.Response) => {
+
+                const albumName = req.params.albumName;
+
+                const musicList = await this.getAvalibleMusic(albumName);
+
+                if(musicList.length > 0){
+
+                return res.status(200).send({
+                        isActionSuccess: true,
+                        avalibleMusicList: musicList,
+                        message: "Loaded avalible music Succesfully"
+                    });
+                }
+
+                return res.status(200).send({ // it should be 200? // to remake //temponary
+                    isActionSuccess: true,
+                    avalibleMusicList: musicList,
+                    message: "Empty album or Error"
+                });
+            })
 
         return this.app;
     }
@@ -57,60 +99,20 @@ export class UsersRoutes extends CommonRoutesConfig {
 
         return isLoginSuccesfull;
     }
+
+    private async registerPost(data:IUsers): Promise<boolean>{
+
+        const { userName, password } = data;
+
+        const isRegisteredSuccesfull = await authManager.register(userName, password);
+
+        return isRegisteredSuccesfull;
+    }
+
+    private async getAvalibleMusic(albumName:string): Promise<string[]>{
+        
+        const avalibleMusicList = await fileManager.getMusic(albumName);
+
+        return avalibleMusicList;
+    }
 }
-
-// app.post("/register", async (req: Request< {}, {} , IUsers, {}>, res: Response): Promise<Response> => {
-
-//     const { userName, password } = req.body;
-
-//     const isRegisteredSuccesfull = await authManager.register(userName, password);
-
-//     if(isRegisteredSuccesfull === false){
-//         return res.status(401).send({
-//             isActionSuccess: true,
-//             isRegisteredSuccesfull: false,
-//             message: "The username is alredy used",
-//         });
-//     }
-
-//     return res.status(200).send({
-//         isActionSuccess: true,
-//         isRegisteredSuccesfull: true,
-//         message: "Register Successful"
-//     });
-// });
-
-// app.get("/avaliblealbums", async (req: Request, res: Response): Promise<Response> => {
-
-//     const avalibleAlbums = await fileManager.getAlbums();
-
-//     console.log(avalibleAlbums);
-
-//     return res.status(200).send({
-//         isActionSuccess: true,
-//         avalibleAlbums: avalibleAlbums,
-//         message: "Loaded avalible albums Succesfully"
-//     });
-// });
-
-// app.get("/avaliblealbums/:albumName", async (req: Request, res: Response): Promise<Response> => {
-    
-//     const albumName = req.params.albumName;
-
-//     const avalibleMusicList = await fileManager.getMusic(albumName);
-
-//     if(avalibleMusicList.length > 0){
-
-//         return res.status(200).send({
-//             isActionSuccess: true,
-//             avalibleMusicList: avalibleMusicList,
-//             message: "Loaded avalible music Succesfully"
-//         });
-//     }
-
-//     return res.status(200).send({ // it should be 200? // to remake //temponary
-//         isActionSuccess: true,
-//         avalibleMusicList: avalibleMusicList,
-//         message: "Empty album or Error"
-//     });
-// });
