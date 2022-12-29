@@ -3,9 +3,9 @@ import express from 'express';
 import { IUsers } from '../models';
 import { authManager, fileManager } from '..';
 
-export class UsersRoutes extends CommonRoutesConfig {
+export class AuthRoutes extends CommonRoutesConfig {
     constructor(app: express.Application) {
-        super(app, 'UsersRoutes');
+        super(app, 'AuthRoutes');
     }
 
     configureRoutes(){

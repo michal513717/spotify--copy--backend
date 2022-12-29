@@ -9,8 +9,9 @@ import * as winston from 'winston';
 import * as expressWinston from 'express-winston';
 
 import cors from 'cors';
-import {UsersRoutes} from './users/users.routes.config';
+import {AuthRoutes} from './routes/auth.routes.config';
 import debug from 'debug';
+import { AlbumsRoutes } from "./routes/albums.routes.config";
 
 const app: express.Application = express();
 const server: http.Server = http.createServer(app);
@@ -40,7 +41,8 @@ if (!process.env.DEBUG) {
 
 app.use(expressWinston.logger(loggerOptions));
 
-routes.push(new UsersRoutes(app));
+routes.push(new AuthRoutes(app));
+routes.push(new AlbumsRoutes(app));
 
 const runningMessage = `Server running at http://localhost:${port}`;
 
@@ -49,7 +51,6 @@ app.get('/', (req: express.Request, res: express.Response) => {
 });
 
 server.listen(port, () => {
-    console.log(routes)
 
     routes.forEach((route: CommonRoutesConfig) => {
         debugLog(`Routes configured for ${route.getName()}`);
