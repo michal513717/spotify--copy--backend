@@ -5,6 +5,7 @@ type ErrorWithMessage = {
 export interface IUsers {
     userName: string;
     password: string;
+    isAdminUser: boolean;
     _id: string;
 };
 

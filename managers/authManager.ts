@@ -52,6 +52,11 @@ export default class AuthManager {
         return true;
     };
 
+    public checkIsAdminAccount(userName:string): boolean{ //temponary //need to remake login flow
+        
+        return true; 
+    };
+
     private isExistUserWithUserName(checkingName:string): boolean { // to rename
  
         if (this.users.some((user:IUsers) => user.userName === checkingName)) {
@@ -75,7 +80,7 @@ export default class AuthManager {
     private addUserToDatabase(userName: string, password: string): boolean{
         try{
 
-            const userData = { userName, password };
+            const userData = { userName, password, isAdminUser:false }; // is admin //temponary
 
             databaseManager.insert(this.databaseName, userData);
 

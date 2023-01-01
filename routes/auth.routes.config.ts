@@ -23,9 +23,12 @@ export class AuthRoutes extends CommonRoutesConfig {
                     });
                 }
 
+                const isAdminAccount = await authManager.checkIsAdminAccount(req.body.userName);
+
                 return res.status(200).send({
                     isActionSuccess: true,
                     isLogginSuccesfull: true,
+                    isAdminAccount: isAdminAccount,
                     message: "Login Successful",
                 });
             })
