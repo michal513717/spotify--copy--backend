@@ -10,8 +10,11 @@ import * as expressWinston from 'express-winston';
 
 import cors from 'cors';
 import {AuthRoutes} from './routes/auth.routes.config';
+import {UploadRoutes} from './routes/upload.routes.config';
 import debug from 'debug';
 import { AlbumsRoutes } from "./routes/albums.routes.config";
+
+import bodyParser from 'body-parser';
 
 const app: express.Application = express();
 const server: http.Server = http.createServer(app);
@@ -40,9 +43,11 @@ if (!process.env.DEBUG) {
 }
 
 app.use(expressWinston.logger(loggerOptions));
+app.use(bodyParser.urlencoded({ extended: true }))
 
 routes.push(new AuthRoutes(app));
 routes.push(new AlbumsRoutes(app));
+routes.push(new UploadRoutes(app));
 
 const runningMessage = `Server running at http://localhost:${port}`;
 
